@@ -8,11 +8,9 @@ import java.net.Socket;
 
 public class ServerApp {
 
-    // Домашнее задание:
-    // 1. Разберитесь с кодом, все вопросы можно писать в комментариях к дз
-    // 2. Пусть сервер подсчитывает количество сообщений от клиента
-    // 3. Если клиент отправит команду '/stat', то сервер должен выслать клиенту
-    // не эхо, а сообщение вида 'Количество сообщений - n'
+    public static void main(String[] args) {
+        new Server(8189);
+    }
 
    private DataInputStream in;
    private DataOutputStream out;
