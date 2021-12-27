@@ -1,9 +1,8 @@
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class DemoChar {
+public class DemoServerConnectChar {
 
     public static void main(String[] args) throws IOException {
 
@@ -19,4 +18,5 @@ public class DemoChar {
 
         socket.close();
     }
+
 }
