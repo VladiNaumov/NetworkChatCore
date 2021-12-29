@@ -34,7 +34,7 @@ public class ClientHandler {
                         // login Bob
                         String usernameFromLogin = msg.split("\\s")[1];
 
-                        if (server.isNickBusy(usernameFromLogin)) {
+                        if (server.isUserOnline(usernameFromLogin)) {
                             sendMessage("/login_failed Current nickname is already used");
                             continue;
                         }
@@ -48,6 +48,10 @@ public class ClientHandler {
                 // Цикл общения с клиентом
                 while (true) {
                     String msg = in.readUTF();
+                    if (msg.startsWith("/")) {
+                        executeCommand(msg);
+                        continue;
+                    }
                     server.broadcastMessage(username + ": " + msg);
                 }
             } catch (IOException e) {
@@ -58,8 +62,21 @@ public class ClientHandler {
         }).start();
     }
 
-    public void sendMessage(String message) throws IOException {
-        out.writeUTF(message);
+    private void executeCommand(String cmd) {
+        // /w Bob Hello, Bob!!!
+        if (cmd.startsWith("/w ")) {
+            String[] tokens = cmd.split("\\s", 3);
+            server.sendPrivateMessage(this, tokens[1], tokens[2]);
+            return;
+        }
+    }
+
+    public void sendMessage(String message){
+        try {
+            out.writeUTF(message);
+        } catch (IOException e) {
+            disconnect();
+        }
     }
 
     public void disconnect() {
