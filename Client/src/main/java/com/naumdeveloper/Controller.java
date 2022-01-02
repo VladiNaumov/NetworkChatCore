@@ -1,27 +1,34 @@
 package com.naumdeveloper;
 
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class Controller {
+public class Controller implements Initializable {
     @FXML
-    TextField msgField, usernameField;
+    TextField msgField, loginField;
+
+    @FXML
+    PasswordField passwordField;
 
     @FXML
     TextArea msgArea;
 
     @FXML
     HBox loginPanel, msgPanel;
+
+    @FXML
+    ListView<String> clientsList;
 
     private Socket socket;
     private DataInputStream in;
@@ -31,32 +38,33 @@ public class Controller {
 
     public void setUsername(String username) {
         this.username = username;
-        if (username != null) {
-            loginPanel.setVisible(false);
-            loginPanel.setManaged(false);
-            msgPanel.setVisible(true);
-            msgPanel.setManaged(true);
-        } else {
-            loginPanel.setVisible(true);
-            loginPanel.setManaged(true);
-            msgPanel.setVisible(false);
-            msgPanel.setManaged(false);
+        boolean usernameIsNull = username == null;
+        loginPanel.setVisible(usernameIsNull);
+        loginPanel.setManaged(usernameIsNull);
+        msgPanel.setVisible(!usernameIsNull);
+        msgPanel.setManaged(!usernameIsNull);
+        clientsList.setVisible(!usernameIsNull);
+        clientsList.setManaged(!usernameIsNull);
         }
+
+
+
+    public void initialize(URL location, ResourceBundle resources) {
+        setUsername(null);
     }
 
     public void login() {
+        if (loginField.getText().isEmpty()) {
+            showErrorAlert("Имя пользователя не может быть пустым");
+            return;
+        }
+
         if (socket == null || socket.isClosed()) {
             connect();
         }
 
-        if (usernameField.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Имя пользователя не может быть пустым", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }
-
         try {
-            out.writeUTF("/login " + usernameField.getText());
+            out.writeUTF("/login " + loginField.getText() + " " + passwordField.getText());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,6 +92,21 @@ public class Controller {
                     // Цикл общения
                     while (true) {
                         String msg = in.readUTF();
+                        if (msg.startsWith("/")) {
+                            if (msg.startsWith("/clients_list ")) {
+                                // /clients_list Bob Max Jack
+                                String[] tokens = msg.split("\\s");
+
+                                Platform.runLater(() -> {
+                                    System.out.println(Thread.currentThread().getName());
+                                    clientsList.getItems().clear();
+                                    for (int i = 1; i < tokens.length; i++) {
+                                        clientsList.getItems().add(tokens[i]);
+                                    }
+                                });
+                            }
+                            continue;
+                        }
                         msgArea.appendText(msg + "\n");
                     }
                 } catch (IOException e) {
@@ -94,8 +117,7 @@ public class Controller {
             });
             t.start();
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно подключиться к серверу", ButtonType.OK);
-            alert.showAndWait();
+            showErrorAlert("Невозможно подключиться к серверу");
         }
     }
 
@@ -107,8 +129,7 @@ public class Controller {
             msgField.clear();
             msgField.requestFocus();
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Невозможно отправить сообщение", ButtonType.OK);
-            alert.showAndWait();
+            showErrorAlert("Невозможно отправить сообщение");
         }
     }
 
@@ -121,5 +142,12 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setContentText(message);
+        alert.setTitle("March Chat FX");
+        alert.setHeaderText(null);
+        alert.showAndWait();
     }
 }
