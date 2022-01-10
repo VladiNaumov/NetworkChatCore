@@ -3,7 +3,9 @@ import java.sql.*;
 public class JdbcMainApp {
 
     private static Connection connection;
+
     private static Statement stmt;
+
     private static PreparedStatement psInsert;
 
     // CRUD
@@ -27,8 +29,12 @@ public class JdbcMainApp {
     public static void connect() {
         try {
             Class.forName("org.sqlite.JDBC");
-            connection = DriverManager.getConnection("jdbc:sqlite:mdb.db");
+
+            //
+
+              connection = DriverManager.getConnection("jdbc:sqlite:mdb.db");
          //   connection = DriverManager.getConnection("jdbc:sqlite:mybase.db");
+
             stmt = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
