@@ -2,8 +2,10 @@ import java.sql.*;
 
 public class JdbcMainApp {
 
+    // подключение к BD
     private static Connection connection;
 
+    // выполнения запросов
     private static Statement stmt;
 
     private static PreparedStatement psInsert;
@@ -30,8 +32,8 @@ public class JdbcMainApp {
 
             //
 
-          //    connection = DriverManager.getConnection("jdbc:sqlite:mdb.db");
-            connection = DriverManager.getConnection("jdbc:sqlite:mybase.db");
+              connection = DriverManager.getConnection("jdbc:sqlite:mdb.db");
+          //  connection = DriverManager.getConnection("jdbc:sqlite:mybase.db");
 
             stmt = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
