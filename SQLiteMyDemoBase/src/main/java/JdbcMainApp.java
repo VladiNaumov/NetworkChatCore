@@ -1,5 +1,14 @@
 import java.sql.*;
 
+
+/*
+CREATE TABLE students (
+    id    INTEGER PRIMARY KEY AUTOINCREMENT,
+    name  TEXT,
+    score INTEGER
+);
+ */
+
 public class JdbcMainApp {
 
     // подключение к BD
@@ -15,9 +24,8 @@ public class JdbcMainApp {
     public static void main(String[] args) {
         try {
             connect();
-
-              readExample();
-
+            CreateDB();
+           // stmt.executeUpdate("INSERT INTO  students (name, score) VALUES ('Max', 90 );");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -30,12 +38,11 @@ public class JdbcMainApp {
         try {
             Class.forName("org.sqlite.JDBC");
 
-            //
 
-              connection = DriverManager.getConnection("jdbc:sqlite:mdb.db");
-          //  connection = DriverManager.getConnection("jdbc:sqlite:mybase.db");
+           connection = DriverManager.getConnection("jdbc:sqlite:mybase.db");
 
             stmt = connection.createStatement();
+
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Невозможно подключиться к БД");
@@ -64,6 +71,25 @@ public class JdbcMainApp {
                 throwables.printStackTrace();
             }
         }
+    }
+
+    public static void CreateDB() throws SQLException
+    {
+        stmt = connection.createStatement();
+        stmt.execute("CREATE TABLE if not exists 'users' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' TEXT, 'score' INT);");
+
+        //  stmt.execute( "CREATE TABLE if not exists 'students' ( 'id 'INTEGER PRIMARY KEY AUTOINCREMENT, 'name'  TEXT, 'phone' INT);");
+
+        System.out.println("Таблица создана или уже существует.");
+    }
+
+    public static void WriteDB() throws SQLException
+    {
+        stmt.execute("INSERT INTO 'users' ('name', 'phone') VALUES ('Petya', 125453); ");
+        stmt.execute("INSERT INTO 'users' ('name', 'phone') VALUES ('Vasya', 321789); ");
+        stmt.execute("INSERT INTO 'users' ('name', 'phone') VALUES ('Masha', 456123); ");
+
+        System.out.println("Таблица заполнена");
     }
 
 

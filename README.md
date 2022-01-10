@@ -1,2 +1,2 @@
 # NetworkChatCore
-Network Server, user, io.output, io.input, javaFx, Sql, Marvel.
+Network Server, user, io.output, io.input, javaFx, SQLite, Marvel.
