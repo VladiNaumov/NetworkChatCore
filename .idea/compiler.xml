@@ -8,7 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Client" />
         <module name="Server" />
-        <module name="LessonSQLbase" />
+        <module name="SQLiteMyDemoBase" />
       </profile>
     </annotationProcessing>
   </component>

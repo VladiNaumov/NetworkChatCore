@@ -13,11 +13,9 @@ public class JdbcMainApp {
     public static void main(String[] args) {
         try {
             connect();
-             // dropAndCreateTable();
+
               readExample();
-             // fillTable();
-            // prepareStatements();
-            // preparedStatementExample();
+
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -32,8 +30,8 @@ public class JdbcMainApp {
 
             //
 
-              connection = DriverManager.getConnection("jdbc:sqlite:mdb.db");
-         //   connection = DriverManager.getConnection("jdbc:sqlite:mybase.db");
+          //    connection = DriverManager.getConnection("jdbc:sqlite:mdb.db");
+            connection = DriverManager.getConnection("jdbc:sqlite:mybase.db");
 
             stmt = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
