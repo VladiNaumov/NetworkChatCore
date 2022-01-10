@@ -85,9 +85,9 @@ public class JdbcMainApp {
 
     public static void WriteDB() throws SQLException
     {
-        stmt.execute("INSERT INTO 'users' ('name', 'phone') VALUES ('Petya', 125453); ");
-        stmt.execute("INSERT INTO 'users' ('name', 'phone') VALUES ('Vasya', 321789); ");
-        stmt.execute("INSERT INTO 'users' ('name', 'phone') VALUES ('Masha', 456123); ");
+        stmt.execute("INSERT INTO 'students' ('name', 'phone') VALUES ('Petya', 125453); ");
+        stmt.execute("INSERT INTO 'students' ('name', 'phone') VALUES ('Vasya', 321789); ");
+        stmt.execute("INSERT INTO 'students' ('name', 'phone') VALUES ('Masha', 456123); ");
 
         System.out.println("Таблица заполнена");
     }
