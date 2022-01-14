@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DbConnection {
-    private static final Logger log = LogManager.getLogger(DbConnection.class);
 
     private Connection connection;
     private Statement stmt;
@@ -25,7 +24,7 @@ public class DbConnection {
             this.connection = DriverManager.getConnection("jdbc:sqlite:database.db");
             this.stmt = connection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
-            log.throwing(Level.ERROR, e);
+
             throw new RuntimeException("Невозможно подключиться к базе данных");
         }
     }
@@ -34,15 +33,15 @@ public class DbConnection {
         if (stmt != null) {
             try {
                 stmt.close();
-            } catch (SQLException e) {
-                log.throwing(Level.ERROR, e);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
         }
         if (connection != null) {
             try {
                 connection.close();
-            } catch (SQLException e) {
-                log.throwing(Level.ERROR, e);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
         }
     }
