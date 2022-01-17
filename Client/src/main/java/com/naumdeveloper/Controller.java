@@ -1,16 +1,13 @@
 package com.naumdeveloper;
 
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -28,12 +25,13 @@ public class Controller implements Initializable {
     HBox loginPanel, msgPanel;
 
     @FXML
+    VBox rootElement;
+
+    @FXML
     ListView<String> clientsList;
 
-    private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
-
+    private Network network;
+    private HistoryManager historyManager;
     private String username;
 
     public void setUsername(String username) {
@@ -45,12 +43,47 @@ public class Controller implements Initializable {
         msgPanel.setManaged(!usernameIsNull);
         clientsList.setVisible(!usernameIsNull);
         clientsList.setManaged(!usernameIsNull);
-        }
+    }
 
-
-
+    @Override
     public void initialize(URL location, ResourceBundle resources) {
         setUsername(null);
+        network = new Network();
+
+        network.setOnAuthFailedCallback(args -> msgArea.appendText((String)args[0] + "\n"));
+
+        network.setOnAuthOkCallback(args -> {
+            String msg = (String)args[0];
+            setUsername(msg.split("\\s")[2]);
+            historyManager.init(msg.split("\\s")[1]);
+            msgArea.clear();
+            msgArea.appendText(historyManager.load());
+        });
+
+        network.setOnMessageReceivedCallback(args -> {
+            String msg = (String)args[0];
+            if (msg.startsWith("/")) {
+                if (msg.startsWith("/clients_list ")) {
+                    String[] tokens = msg.split("\\s");
+                    Platform.runLater(() -> {
+                        clientsList.getItems().clear();
+                        for (int i = 1; i < tokens.length; i++) {
+                            clientsList.getItems().add(tokens[i]);
+                        }
+                    });
+                }
+                return;
+            }
+            historyManager.write(msg + "\n");
+            msgArea.appendText(msg + "\n");
+        });
+
+        network.setOnDisconnectCallback(args -> {
+            setUsername(null);
+            historyManager.close();
+        });
+
+        historyManager = new HistoryManager();
     }
 
     public void login() {
@@ -59,73 +92,25 @@ public class Controller implements Initializable {
             return;
         }
 
-        if (socket == null || socket.isClosed()) {
-            connect();
+        if (!network.isConnected()) {
+            try {
+                network.connect(8189);
+            } catch (IOException e) {
+                showErrorAlert("Невозможно подключиться к серверу на порт: " + 8189);
+                return;
+            }
         }
 
         try {
-            out.writeUTF("/login " + loginField.getText() + " " + passwordField.getText());
+            network.tryToLogin(loginField.getText(), passwordField.getText());
         } catch (IOException e) {
-            e.printStackTrace();
+            showErrorAlert("Невозможно отправить данные пользователя");
         }
     }
-
-    public void connect() {
-        try {
-            socket = new Socket("localhost", 8189);
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
-            Thread t = new Thread(() -> {
-                try {
-                    // Цикл авторизации
-                    while (true) {
-                        String msg = in.readUTF();
-                        if (msg.startsWith("/login_ok ")) {
-                            setUsername(msg.split("\\s")[1]);
-                            break;
-                        }
-                        if (msg.startsWith("/login_failed ")) {
-                            String cause = msg.split("\\s", 2)[1];
-                            msgArea.appendText(cause + "\n");
-                        }
-                    }
-                    // Цикл общения
-                    while (true) {
-                        String msg = in.readUTF();
-                        if (msg.startsWith("/")) {
-                            if (msg.startsWith("/clients_list ")) {
-                                // /clients_list Bob Max Jack
-                                String[] tokens = msg.split("\\s");
-
-                                Platform.runLater(() -> {
-                                    System.out.println(Thread.currentThread().getName());
-                                    clientsList.getItems().clear();
-                                    for (int i = 1; i < tokens.length; i++) {
-                                        clientsList.getItems().add(tokens[i]);
-                                    }
-                                });
-                            }
-                            continue;
-                        }
-                        msgArea.appendText(msg + "\n");
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    disconnect();
-                }
-            });
-            t.start();
-        } catch (IOException e) {
-            showErrorAlert("Невозможно подключиться к серверу");
-        }
-    }
-
-
 
     public void sendMsg() {
         try {
-            out.writeUTF(msgField.getText());
+            network.sendMessage(msgField.getText());
             msgField.clear();
             msgField.requestFocus();
         } catch (IOException e) {
@@ -133,20 +118,14 @@ public class Controller implements Initializable {
         }
     }
 
-    private void disconnect() {
-        setUsername(null);
-        try {
-            if (socket != null) {
-                socket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void exit() {
+        network.disconnect();
     }
+
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setContentText(message);
-        alert.setTitle("March Chat FX");
+        alert.setTitle("Chat FX");
         alert.setHeaderText(null);
         alert.showAndWait();
     }

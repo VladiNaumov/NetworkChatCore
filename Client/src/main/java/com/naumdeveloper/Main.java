@@ -12,6 +12,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/window.fxml"));
         primaryStage.setTitle("Chat");
         primaryStage.setScene(new Scene(root, 600, 400));
+       // primaryStage.setOnCloseRequest(event -> controller.exit());
         primaryStage.show();
     }
 
