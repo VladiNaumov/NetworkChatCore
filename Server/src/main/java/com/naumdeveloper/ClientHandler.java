@@ -63,16 +63,21 @@ public class ClientHandler {
             String login = tokens[1];
             String password = tokens[2];
 
-           // TODO deleting optional
+
+
             Optional<String> userNickname = Optional.ofNullable(server.getAuthenticationProvider().getNicknameByLoginAndPassword(login, password));
+
+
             if (!userNickname.isPresent()) {
                 sendMessage("/login_failed Введен некорретный логин/пароль");
                 return false;
             }
             if (server.isUserOnline(userNickname.get())) {
+
                 sendMessage("/login_failed Учетная запись уже используется");
                 return false;
             }
+
             username = userNickname.get();
             sendMessage("/login_ok " + login + " " + username);
             server.subscribe(this);
