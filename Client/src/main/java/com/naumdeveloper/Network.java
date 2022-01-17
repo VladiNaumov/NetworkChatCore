@@ -1,7 +1,5 @@
 package com.naumdeveloper;
 
-import javafx.application.Platform;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;

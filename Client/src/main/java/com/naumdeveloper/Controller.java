@@ -125,7 +125,7 @@ public class Controller implements Initializable {
     private void showErrorAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setContentText(message);
-        alert.setTitle("March Chat FX");
+        alert.setTitle("Chat FX");
         alert.setHeaderText(null);
         alert.showAndWait();
     }
