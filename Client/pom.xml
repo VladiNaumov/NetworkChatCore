@@ -20,7 +20,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.naumdeveloper.Main</mainClass>
+                            <mainClass>com.naumdeveloper.ClientApp</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

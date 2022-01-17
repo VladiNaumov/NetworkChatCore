@@ -32,7 +32,28 @@ public class ClientHandler {
                 // Цикл авторизации
                 while (true) {
                     String msg = in.readUTF();
-                    if (executeAuthenticationMessage(msg)) {
+                    if (msg.startsWith("/login ")) {
+                        // /login Bob 100xyz
+                        String[] tokens = msg.split("\\s+");
+                        if (tokens.length != 3) {
+                            sendMessage("/login_failed Введите имя пользователя и пароль");
+                            continue;
+                        }
+                        String login = tokens[1];
+                        String password = tokens[2];
+
+                        String userNickname = server.getAuthenticationProvider().getNicknameByLoginAndPassword(login, password);
+                        if (userNickname == null) {
+                            sendMessage("/login_failed Введен некорретный логин/пароль");
+                            continue;
+                        }
+                        if (server.isUserOnline(userNickname)) {
+                            sendMessage("/login_failed Учетная запись уже используется");
+                            continue;
+                        }
+                        username = userNickname;
+                        sendMessage("/login_ok " + username);
+                        server.subscribe(this);
                         break;
                     }
                 }
@@ -51,39 +72,6 @@ public class ClientHandler {
                 disconnect();
             }
         }).start();
-    }
-
-    private boolean executeAuthenticationMessage(String msg) {
-        if (msg.startsWith("/login ")) {
-            String[] tokens = msg.split("\\s+");
-            if (tokens.length != 3) {
-                sendMessage("/login_failed Введите имя пользователя и пароль");
-                return false;
-            }
-            String login = tokens[1];
-            String password = tokens[2];
-
-
-
-            Optional<String> userNickname = Optional.ofNullable(server.getAuthenticationProvider().getNicknameByLoginAndPassword(login, password));
-
-
-            if (!userNickname.isPresent()) {
-                sendMessage("/login_failed Введен некорретный логин/пароль");
-                return false;
-            }
-            if (server.isUserOnline(userNickname.get())) {
-
-                sendMessage("/login_failed Учетная запись уже используется");
-                return false;
-            }
-
-            username = userNickname.get();
-            sendMessage("/login_ok " + login + " " + username);
-            server.subscribe(this);
-            return true;
-        }
-        return false;
     }
 
     private void executeCommand(String cmd) {
