@@ -51,14 +51,18 @@ public class Network {
 
         Thread t = new Thread(() -> {
             try {
+                // цик авторизации
                 while (true) {
                     String msg = in.readUTF();
+
+                    // успешной авторизации
                     if (msg.startsWith("/login_ok ")) {
                         if (onAuthOkCallback != null) {
                             onAuthOkCallback.callback(msg);
                         }
                         break;
                     }
+                        // не успешной авторизации
                     if (msg.startsWith("/login_failed ")) {
                         String cause = msg.split("\\s", 2)[1];
                         if (onAuthFailedCallback != null) {
@@ -66,6 +70,7 @@ public class Network {
                         }
                     }
                 }
+                // цикл общение
                 while (true) {
                     String msg = in.readUTF();
                     if (onMessageReceivedCallback != null) {
@@ -81,13 +86,22 @@ public class Network {
         t.start();
     }
 
+
+
+
     public void sendMessage(String message) throws IOException {
         out.writeUTF(message);
     }
 
+
+    /*
+
     public void tryToLogin(String login, String password) throws IOException {
         sendMessage("/login " + login + " " + password);
     }
+
+
+     */
 
     public void disconnect() {
         if (onDisconnectCallback != null) {

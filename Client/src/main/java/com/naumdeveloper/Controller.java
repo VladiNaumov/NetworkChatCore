@@ -49,9 +49,12 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setUsername(null);
         network = new Network();
+     //   historyManager = new HistoryManager();
 
+        // если придет сообщение о не успешной авторизации
         network.setOnAuthFailedCallback(args -> msgArea.appendText((String)args[0] + "\n"));
 
+        // о  успешной авторизации
         network.setOnAuthOkCallback(args -> {
             String msg = (String)args[0];
             setUsername(msg.split("\\s")[2]);
@@ -60,6 +63,7 @@ public class Controller implements Initializable {
             msgArea.appendText(historyManager.load());
         });
 
+        //
         network.setOnMessageReceivedCallback(args -> {
             String msg = (String)args[0];
             if (msg.startsWith("/")) {
@@ -78,6 +82,7 @@ public class Controller implements Initializable {
             msgArea.appendText(msg + "\n");
         });
 
+        // о отключение пользователя от сервера
         network.setOnDisconnectCallback(args -> {
             setUsername(null);
             historyManager.close();
@@ -102,7 +107,8 @@ public class Controller implements Initializable {
         }
 
         try {
-            network.tryToLogin(loginField.getText(), passwordField.getText());
+           // network.tryToLogin(loginField.getText(), passwordField.getText());
+            network.sendMessage("/login" + loginField.getText()+ " " + passwordField.getText());
         } catch (IOException e) {
             showErrorAlert("Невозможно отправить данные пользователя");
         }
@@ -118,6 +124,7 @@ public class Controller implements Initializable {
         }
     }
 
+    // когда мы выходим
     public void exit() {
         network.disconnect();
     }

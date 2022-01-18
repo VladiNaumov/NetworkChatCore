@@ -9,12 +9,9 @@ public class ConsoleClient {
         Network network = new Network();
         network.connect(8189);
 
-        network.setOnMessageReceivedCallback(new Callback() {
-            @Override
-            public void callback(Object... args) {
-                String msg = (String) args[0];
-                System.out.println(msg);
-            }
+        network.setOnMessageReceivedCallback(args1 -> {
+            String msg = (String) args1[0];
+            System.out.println(msg);
         });
 
         System.out.println(" Reding /login login password");
