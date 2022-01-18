@@ -57,7 +57,12 @@ public class Controller implements Initializable {
         // о  успешной авторизации
         network.setOnAuthOkCallback(args -> {
             String msg = (String)args[0];
-            setUsername(msg.split("\\s")[2]);
+
+            /*
+                VANHA
+                setUsername(msg.split("\\s")[2]);
+             */
+            setUsername(msg.split("\\s")[0]);
             historyManager.init(msg.split("\\s")[1]);
             msgArea.clear();
             msgArea.appendText(historyManager.load());

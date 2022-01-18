@@ -86,18 +86,19 @@ public class Network {
         t.start();
     }
 
+
     // отправка сообнения
     public void sendMessage(String message) throws IOException {
         out.writeUTF(message);
     }
 
 
-    // конфигуририрование сообнения
+
+
+    // конфигуририрование, отправка сообнения
     public void tryToLogin(String login, String password) throws IOException {
         sendMessage("/login " + login + " " + password);
-
-
-    }
+      }
 
 
     public void disconnect() {

@@ -14,12 +14,16 @@ public class ConsoleClient {
             System.out.println(msg);
         });
 
-        System.out.println(" Reding /login login password");
+        System.out.println(" write please: login password");
         String loinLine = sc.nextLine();
+
+        /* VANHA
         String login = loinLine.split("\\s+")[1];
         String password = loinLine.split("\\s+")[2];
+         */
 
-       //network.sendMessage("/login " + login + " " + password);
+        String login = loinLine.split("\\s+")[0];
+        String password = loinLine.split("\\s+")[1];
 
         network.tryToLogin(login,password);
 

@@ -10,5 +10,8 @@
         <module name="Server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="SQLiteMyDemoBase" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
