@@ -18,7 +18,10 @@ public class ConsoleClient {
         String loinLine = sc.nextLine();
         String login = loinLine.split("\\s+")[1];
         String password = loinLine.split("\\s+")[2];
-        network.sendMessage("/login " + login + " " + password);
+
+       //network.sendMessage("/login " + login + " " + password);
+
+        network.tryToLogin(login,password);
 
         while (true){
             String message = sc.nextLine();

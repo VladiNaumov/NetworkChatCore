@@ -107,8 +107,7 @@ public class Controller implements Initializable {
         }
 
         try {
-           // network.tryToLogin(loginField.getText(), passwordField.getText());
-            network.sendMessage("/login" + loginField.getText()+ " " + passwordField.getText());
+            network.tryToLogin(loginField.getText(), passwordField.getText());
         } catch (IOException e) {
             showErrorAlert("Невозможно отправить данные пользователя");
         }
