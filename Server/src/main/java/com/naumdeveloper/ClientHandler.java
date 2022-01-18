@@ -1,11 +1,9 @@
 package com.naumdeveloper;
 
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Optional;
 
 /* Класс отвечающий за авторизацию клеента к сервера и создание отдельного потока подключения к серверу */
 public class ClientHandler {
@@ -32,30 +30,10 @@ public class ClientHandler {
                 // Цикл авторизации
                 while (true) {
                     String msg = in.readUTF();
-                    if (msg.startsWith("/login ")) {
-                        // /login Bob 100xyz
-                        String[] tokens = msg.split("\\s+");
-                        if (tokens.length != 3) {
-                            sendMessage("/login_failed Введите имя пользователя и пароль");
-                            continue;
-                        }
-                        String login = tokens[1];
-                        String password = tokens[2];
-
-                        String userNickname = server.getAuthenticationProvider().getNicknameByLoginAndPassword(login, password);
-                        if (userNickname == null) {
-                            sendMessage("/login_failed Введен некорретный логин/пароль");
-                            continue;
-                        }
-                        if (server.isUserOnline(userNickname)) {
-                            sendMessage("/login_failed Учетная запись уже используется");
-                            continue;
-                        }
-                        username = userNickname;
-                        sendMessage("/login_ok " + username);
-                        server.subscribe(this);
+                    if (executeAuthenticationMessage(msg)) {
                         break;
                     }
+
                 }
                 // Цикл общения с клиентом
                 while (true) {
@@ -74,14 +52,44 @@ public class ClientHandler {
         }).start();
     }
 
+    private boolean executeAuthenticationMessage(String msg) {
+        if (msg.startsWith("/login ")) {
+            String[] tokens = msg.split("\\s+");
+            if (tokens.length != 3) {
+                sendMessage("/login_failed Введите имя пользователя и пароль");
+                return false;
+            }
+            String login = tokens[1];
+            String password = tokens[2];
+
+           String userNickname = server.getAuthenticationProvider().getNicknameByLoginAndPassword(login, password);
+            if (userNickname == null) {
+                sendMessage("/login_failed Введен некорретный логин/пароль");
+                return false;
+            }
+            if (server.isUserOnline(userNickname)) {
+                sendMessage("/login_failed Учетная запись уже используется");
+                return false;
+            }
+            username = userNickname;
+            sendMessage("/login_ok " + login + " " + username);
+            server.subscribe(this);
+            return true;
+        }
+        return false;
+    }
+
     private void executeCommand(String cmd) {
-        // /w Bob Hello, Bob!!!
         if (cmd.startsWith("/w ")) {
             String[] tokens = cmd.split("\\s+", 3);
+            if (tokens.length != 3) {
+                sendMessage("Server: Введена некорректная команда");
+                return;
+            }
             server.sendPrivateMessage(this, tokens[1], tokens[2]);
             return;
         }
-        // /change_nick myNewNickname
+
         if (cmd.startsWith("/change_nick ")) {
             String[] tokens = cmd.split("\\s+");
             if (tokens.length != 2) {
