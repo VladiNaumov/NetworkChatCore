@@ -11,9 +11,9 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="ClientCore" target="11" />
-      <module name="ClientFirst" target="11" />
-      <module name="SQLiteMyDemoBase" target="8" />
+      <module name="Client" target="1.8" />
+      <module name="NetworkChatCore" target="1.8" />
+      <module name="Server" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
