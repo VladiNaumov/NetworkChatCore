@@ -8,10 +8,10 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Server" />
         <module name="Client" />
-        <module name="ClientCore" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="ClientCore" target="11" />
       <module name="ClientFirst" target="11" />
       <module name="SQLiteMyDemoBase" target="8" />
     </bytecodeTargetLevel>
