@@ -3,7 +3,7 @@ package com.naumdeveloper;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class ConsoleClient {
+public class RunConsoleClient {
     public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
         Network network = new Network();
