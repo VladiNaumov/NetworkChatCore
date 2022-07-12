@@ -10,7 +10,8 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>Server</module>
-        <module>Clients</module>
+        <module>ConsolClient</module>
+        <module>FXClient</module>
     </modules>
 
     <properties>
